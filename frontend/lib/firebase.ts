@@ -21,9 +21,9 @@ const auth = app ? getAuth(app) : (null as any);
 
 // Initialize Analytics (only in client side and if supported)
 let analytics;
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && app) {
   isSupported().then((supported) => {
-    if (supported) {
+    if (supported && app) {
       analytics = getAnalytics(app);
     }
   });
