@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: avestra
+      POSTGRES_PASSWORD: avestra123
+      POSTGRES_DB: avestra
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  chromadb:
+    image: chromadb/chroma:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma:/chroma/chroma
+
+  backend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+    command: sh -lc "npm ci && npm run dev"
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - CHROMA_URL=http://chromadb:8000
+    depends_on:
+      - postgres
+      - chromadb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.copiloto-backend.rule=Host(`agents.ugaritcloud.online`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.copiloto-backend.entrypoints=websecure"
+      - "traefik.http.routers.copiloto-backend.tls=true"
+      - "traefik.http.routers.copiloto-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.copiloto-backend.loadbalancer.server.port=4000"
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    command: sh -lc "npm ci && npm run dev"
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_BASE=http://localhost:4000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.copiloto-frontend.rule=Host(`agents.ugaritcloud.online`)"
+      - "traefik.http.routers.copiloto-frontend.entrypoints=websecure"
+      - "traefik.http.routers.copiloto-frontend.tls=true"
+      - "traefik.http.routers.copiloto-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.copiloto-frontend.loadbalancer.server.port=3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  backend_node_modules:
+  frontend_node_modules:
