@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const CLAUDE_MODEL = 'claude-sonnet-4-5';
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User, x-user',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS });
+}
+
 const PESQUISADOR_PROMPT = `Você é o Pesquisador Jurídico do Avestra, assistente IA especializado em pesquisa jurisprudencial e doutrinária brasileira, desenvolvido pelo Dr. Wladmir Bonadio Filho (OAB/SP).
 
 ## REGRAS ABSOLUTAS
@@ -173,17 +183,17 @@ export async function POST(
     const query: string = (body.query || body.text || '').trim();
 
     if (!query) {
-      return NextResponse.json({ error: 'query obrigatória' }, { status: 400 });
+      return NextResponse.json({ error: 'query obrigatória' }, { status: 400, headers: CORS });
     }
 
     const agent = AGENTS[agentId];
     if (!agent) {
-      return NextResponse.json({ error: `Agente '${agentId}' não encontrado` }, { status: 404 });
+      return NextResponse.json({ error: `Agente '${agentId}' não encontrado` }, { status: 404, headers: CORS });
     }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 });
+      return NextResponse.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500, headers: CORS });
     }
 
     const anthropicResp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -204,22 +214,25 @@ export async function POST(
     if (!anthropicResp.ok) {
       const errText = await anthropicResp.text();
       console.error(`[agent:${agentId}] Anthropic error ${anthropicResp.status}:`, errText);
-      return NextResponse.json({ error: 'Erro na API do agente' }, { status: 500 });
+      return NextResponse.json({ error: 'Erro na API do agente' }, { status: 500, headers: CORS });
     }
 
     const data = await anthropicResp.json();
     const text: string = data.content?.[0]?.text || '';
 
-    return NextResponse.json({
-      status: 'OK',
-      text,
-      usage: {
-        input_tokens: data.usage?.input_tokens ?? 0,
-        output_tokens: data.usage?.output_tokens ?? 0,
+    return NextResponse.json(
+      {
+        status: 'OK',
+        text,
+        usage: {
+          input_tokens: data.usage?.input_tokens ?? 0,
+          output_tokens: data.usage?.output_tokens ?? 0,
+        },
       },
-    });
+      { headers: CORS }
+    );
   } catch (err: any) {
     console.error('[agents/run] error:', err?.message || err);
-    return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500, headers: CORS });
   }
 }
