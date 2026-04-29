@@ -1139,7 +1139,7 @@ function AgentsSection({ userName, userInitials, activeTab, setSection }: {
 
     try {
       const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-      const apiBase = isLocal ? 'http://localhost:4000' : '';
+      const apiBase = isLocal ? 'http://localhost:4000' : (process.env.NEXT_PUBLIC_API_BASE || '');
       
       const currentC = chats.find(c => c.id === targetChatId) || (targetChatId ? { agentId: agentsList[0]?.id || 'tomy' } : null);
       let agentId = currentC?.agentId || 'tomy';
@@ -1213,7 +1213,7 @@ function AgentsSection({ userName, userInitials, activeTab, setSection }: {
       if (chat) {
         try {
           const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-          const apiBase = isLocal ? 'http://localhost:4000' : '';
+          const apiBase = isLocal ? 'http://localhost:4000' : (process.env.NEXT_PUBLIC_API_BASE || '');
           let agentId = chat.agentId || 'tomy';
           if (agentId === 'copywriter') agentId = 'tomy';
           await fetch(`${apiBase}/api/agents/${agentId}/clear`, { method: 'POST' });

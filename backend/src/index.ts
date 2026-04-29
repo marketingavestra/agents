@@ -85,7 +85,6 @@ app.use('/api/agents/petiai', petiaRouter);
 app.use('/api/agents/contratai', contrataiRouter);
 
 const PORT = parseInt(process.env.PORT || '4000', 10);
-app.listen(PORT, async () => {
-  console.log(`[backend] listening on http://localhost:${PORT}`);
-  // WhatsApp desativado por diretriz do usuário: interação SOMENTE via Web
 });
+
+export default app;
