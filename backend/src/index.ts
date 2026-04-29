@@ -11,7 +11,12 @@ import { petiaRouter } from './agents/petiai/router.js';
 import { contrataiRouter } from './agents/contratai/router.js';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-User', 'x-user']
+}));
+app.options('*', cors());
 app.use(express.json());
 
 // Health check and root status
