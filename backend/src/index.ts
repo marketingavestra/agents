@@ -89,7 +89,4 @@ app.use('/api/agents/pesquisador', pesquisadorRouter);
 app.use('/api/agents/petiai', petiaRouter);
 app.use('/api/agents/contratai', contrataiRouter);
 
-const PORT = parseInt(process.env.PORT || '4000', 10);
-});
-
 export default app;
