@@ -20,6 +20,7 @@ export default function RegisterPage() {
     setLoading(true);
     
     try {
+      if (!auth) throw new Error('Serviço de autenticação não disponível.');
       await createUserWithEmailAndPassword(auth, email, password);
       localStorage.setItem('av_auth', '1');
       router.push('/dashboard');

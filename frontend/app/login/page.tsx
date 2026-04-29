@@ -15,7 +15,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (!auth) return;
+    const unsubscribe = auth.onAuthStateChanged((user: any) => {
       if (user) {
         localStorage.setItem('av_auth', '1');
         router.replace('/dashboard');
@@ -37,6 +38,7 @@ export default function LoginPage() {
         return;
       }
 
+      if (!auth) throw new Error('Serviço de autenticação não disponível.');
       await signInWithEmailAndPassword(auth, email, password);
       localStorage.setItem('av_auth', '1');
       router.push('/dashboard');

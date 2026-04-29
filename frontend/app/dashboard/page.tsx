@@ -864,7 +864,8 @@ export default function DashboardPage() {
 
   // Auth
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    if (!auth) return;
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser: any) => {
       if (firebaseUser) {
         setUser(firebaseUser);
         localStorage.setItem('av_auth', '1');
