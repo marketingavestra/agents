@@ -50,6 +50,7 @@ const AGENTS = [
     bg: 'rgba(96, 165, 250, 0.1)',
     border: 'rgba(96, 165, 250, 0.25)',
     emoji: 'search',
+    image: '/search_icon.png',
     description: 'Pesquisa jurisprudência no STJ, STF, TJs e TST. Localiza súmulas, acórdãos e teses com fontes rastreáveis.',
     skills: ['Jurisprudência STJ/STF', 'Súmulas e Teses', 'Doutrina Jurídica'],
     suggestions: [
@@ -915,7 +916,8 @@ export default function DashboardPage() {
         <div className="dash-sidebar-header">
           <div className="dash-logo">
             <img src="/Avestraaa.png" alt="Avestra" style={{ height: 36, width: 'auto' }} />
-            <span className="dash-logo-badge">Pro</span>
+            <img src="/Gemini_Generated_Image_uacn38uacn38uacn-removebg-preview.png" alt="Pro" style={{ height: 20, marginLeft: 6, opacity: 0.9 }} />
+
           </div>
         </div>
 
